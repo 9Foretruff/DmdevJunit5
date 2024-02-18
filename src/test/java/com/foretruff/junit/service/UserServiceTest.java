@@ -3,13 +3,17 @@ package com.foretruff.junit.service;
 import com.foretruff.junit.dto.User;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
+import java.util.Map;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -36,6 +40,9 @@ class UserServiceTest {
         System.out.println("Test 1: " + this.toString());
         var users = userService.getAll();
 
+        assertThat(users)
+                .as("User list should be empty")
+                .isEmpty();
         assertTrue(users.isEmpty(), () -> "User list should be empty");
         // input -> [box == func] -> actual output
     }
@@ -48,7 +55,8 @@ class UserServiceTest {
 
         var users = userService.getAll();
 
-        assertEquals(2, users.size());
+        assertThat(users).hasSize(2);
+//        assertEquals(2, users.size());
     }
 
     @Test
@@ -57,8 +65,23 @@ class UserServiceTest {
 
         Optional<User> maybeUser = userService.login(IVAN.getUsername(), IVAN.getPassword());
 
-        assertTrue(maybeUser.isPresent());
-        maybeUser.ifPresent(user -> assertEquals(IVAN, user));
+        assertThat(maybeUser).isPresent();
+        maybeUser.ifPresent(user -> assertThat(user).isEqualTo(IVAN));
+
+//        assertTrue(maybeUser.isPresent());
+//        maybeUser.ifPresent(user -> assertEquals(IVAN, user));
+    }
+
+    @Test
+    void usersConvertedToMapById() {
+        userService.add(IVAN, VASYA);
+
+        Map<Integer, User> users = userService.getAllConvertedById();
+
+        assertAll(
+                () -> assertThat(users).containsKeys(IVAN.getId(), VASYA.getId()),
+                () -> assertThat(users).containsValues(IVAN, VASYA)
+        );
     }
 
     @Test
