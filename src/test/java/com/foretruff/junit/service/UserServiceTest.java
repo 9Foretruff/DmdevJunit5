@@ -15,6 +15,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
@@ -70,6 +71,18 @@ class UserServiceTest {
 
 //        assertTrue(maybeUser.isPresent());
 //        maybeUser.ifPresent(user -> assertEquals(IVAN, user));
+    }
+
+    @Test
+    void throwExceptionIfUsernameOrPasswordIsNull() {
+        assertAll(
+                () -> {
+                    var exception = assertThrows(IllegalArgumentException.class, () -> userService.login(null, "oops"));
+                    assertThat(exception.getMessage()).isEqualTo("Username or password is null");
+                },
+                () -> assertThrows(IllegalArgumentException.class, () -> userService.login("oops", null)),
+                () -> assertThrows(IllegalArgumentException.class, () -> userService.login(null, null))
+        );
     }
 
     @Test
