@@ -1,6 +1,7 @@
 package com.foretruff.junit.service;
 
 import com.foretruff.junit.dto.User;
+import com.foretruff.junit.paramresolver.UserServiceParamResolver;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -11,8 +12,10 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.Map;
 import java.util.Optional;
@@ -26,11 +29,18 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Tag("user")
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@ExtendWith({
+        UserServiceParamResolver.class
+})
 class UserServiceTest {
     // ctrl + alt + v || ctrl + alt + c
     private static final User IVAN = User.of(1, "Ivan", "777");
     private static final User VASYA = User.of(2, "Vasya", "123");
     private UserService userService;
+
+    UserServiceTest(TestInfo testInfo) {
+        System.out.println();
+    }
 
     @BeforeAll
     static void init() {
@@ -38,9 +48,9 @@ class UserServiceTest {
     }
 
     @BeforeEach
-    void prepare() {
+    void prepare(UserService userService) {
         System.out.println("Before each: " + this.toString());
-        userService = new UserService();
+        this.userService = userService;
     }
 
     @Test
@@ -53,7 +63,7 @@ class UserServiceTest {
         assertThat(users)
                 .as("User list should be empty")
                 .isEmpty();
-        assertTrue(users.isEmpty(), () -> "User list should be empty");
+//        assertTrue(users.isEmpty(), () -> "User list should be empty");
         // input -> [box == func] -> actual output
     }
 
