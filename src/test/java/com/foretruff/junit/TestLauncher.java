@@ -21,7 +21,6 @@ public class TestLauncher {
                 .build();
         launcher.execute(request, summaryGeneratingListener);
 
-
         try (var printWriter = new PrintWriter(System.out)) {
             summaryGeneratingListener.getSummary().printTo(printWriter);
         }
