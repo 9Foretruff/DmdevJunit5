@@ -3,9 +3,9 @@ package com.foretruff.junit.service;
 import com.foretruff.junit.dto.User;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
@@ -14,10 +14,10 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
+//@Tag("fast") unit
+@Tag("user")
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
 class UserServiceTest {
     // ctrl + alt + v || ctrl + alt + c
@@ -61,6 +61,7 @@ class UserServiceTest {
     }
 
     @Test
+    @Tag("login")
     void loginSuccessIfUserExists() {
         userService.add(IVAN);
 
@@ -74,6 +75,7 @@ class UserServiceTest {
     }
 
     @Test
+    @Tag("login")
     void throwExceptionIfUsernameOrPasswordIsNull() {
         assertAll(
                 () -> {
@@ -98,6 +100,7 @@ class UserServiceTest {
     }
 
     @Test
+    @Tag("login")
     void loginFailedIfPasswordIsNotCorrect() {
         userService.add(IVAN);
 
@@ -107,6 +110,7 @@ class UserServiceTest {
     }
 
     @Test
+    @Tag("login")
     void loginFailedIfUserDoesNotExist() {
         userService.add(IVAN);
 
