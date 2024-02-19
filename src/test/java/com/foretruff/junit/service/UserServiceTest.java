@@ -53,7 +53,6 @@ class UserServiceTest {
 
     UserServiceTest(TestInfo testInfo) {
         System.out.println();
-
     }
 
     @BeforeAll
