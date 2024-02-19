@@ -1,8 +1,12 @@
 package com.foretruff.junit.service;
 
+import com.foretruff.junit.TestBase;
 import com.foretruff.junit.dto.User;
-import com.foretruff.junit.paramresolver.UserServiceParamResolver;
-import lombok.Value;
+import com.foretruff.junit.extension.ConditionalExtension;
+import com.foretruff.junit.extension.GlobalExtension;
+import com.foretruff.junit.extension.PostProcessingExtension;
+import com.foretruff.junit.extension.ThrowableExtension;
+import com.foretruff.junit.extension.UserServiceParamResolver;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -43,9 +47,13 @@ import static org.junit.jupiter.api.RepeatedTest.LONG_DISPLAY_NAME;
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @ExtendWith({
-        UserServiceParamResolver.class
+        UserServiceParamResolver.class,
+        GlobalExtension.class,
+        PostProcessingExtension.class,
+        ConditionalExtension.class,
+        ThrowableExtension.class
 })
-class UserServiceTest {
+class UserServiceTest extends TestBase {
     // ctrl + alt + v || ctrl + alt + c
     private static final User IVAN = User.of(1, "Ivan", "777");
     private static final User VASYA = User.of(2, "Vasya", "123");
@@ -145,7 +153,7 @@ class UserServiceTest {
         @Test
         void checkLoginFunctionalityPerformance() {
             var maybeUser = assertTimeout(Duration.ofMillis(200), () -> {
-                Thread.sleep(100);
+//                Thread.sleep(100);
                 return userService.login("oops", "oops");
             });
         }

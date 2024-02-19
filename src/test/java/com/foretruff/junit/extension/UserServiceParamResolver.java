@@ -1,4 +1,4 @@
-package com.foretruff.junit.paramresolver;
+package com.foretruff.junit.extension;
 
 import com.foretruff.junit.service.UserService;
 import org.junit.jupiter.api.extension.ExtensionContext;
