@@ -2,6 +2,7 @@ package com.foretruff.junit.service;
 
 import com.foretruff.junit.dto.User;
 import com.foretruff.junit.paramresolver.UserServiceParamResolver;
+import lombok.Value;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -16,9 +17,21 @@ import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsSources;
+import org.junit.jupiter.params.provider.CsvFileSource;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.EmptySource;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -40,6 +53,7 @@ class UserServiceTest {
 
     UserServiceTest(TestInfo testInfo) {
         System.out.println();
+
     }
 
     @BeforeAll
@@ -152,6 +166,37 @@ class UserServiceTest {
                     () -> assertThrows(IllegalArgumentException.class, () -> userService.login(null, null))
             );
         }
+
+        @ParameterizedTest()
+        // @ArgumentsSources()
+//        @EmptySource
+//        @NullSource // Могуть быть использованы только если в методе один параметр
+//        @NullAndEmptySource
+//        @ValueSource(strings = {"Ivan", "Petya"})
+//        @EnumSource()
+        @MethodSource("com.foretruff.junit.service.UserServiceTest#getArgumentsForLoginTest")
+//        @CsvFileSource(resources = "/login-test-data.csv", numLinesToSkip = 1)
+//        @CsvSource({
+//                "Ivan,123",
+//                "Vasya,777"
+//        })
+        @DisplayName("login param test")
+        void loginParametrizedTest(String username, String password, Optional<User> user) {
+            userService.add(IVAN,VASYA);
+
+            var maybeUser = userService.login(username, password);
+            assertThat(maybeUser).isEqualTo(user);
+        }
+
+    }
+
+    static Stream<Arguments> getArgumentsForLoginTest() {
+        return Stream.of(
+                Arguments.of("Vasya", "123", Optional.of(VASYA)),
+                Arguments.of("Ivan", "777", Optional.of(IVAN)),
+                Arguments.of("Ivan", "oppps", Optional.empty()),
+                Arguments.of("oppps", "777", Optional.empty())
+        );
     }
 
 }
