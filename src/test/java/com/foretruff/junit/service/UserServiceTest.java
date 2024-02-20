@@ -31,6 +31,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
+import org.mockito.BDDMockito;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -111,6 +112,8 @@ class UserServiceTest extends TestBase {
 
 //        Mockito.when(userDao.delete(Mockito.anyInt())).thenReturn(true).thenReturn(false);
 
+//        BDDMockito.given(userDao.delete(IVAN.getId())).willReturn(true);
+
         var deleteResult = userService.delete(IVAN.getId());
         System.out.println(userService.delete(IVAN.getId()));
         System.out.println(userService.delete(IVAN.getId()));
@@ -142,6 +145,9 @@ class UserServiceTest extends TestBase {
     @Test
     @Order(2)
     void usersSizeIfUserAdded() {
+        //given
+        // when
+        // then
         System.out.println("Test 2: " + this.toString());
         userService.add(IVAN);
         userService.add(VASYA);
