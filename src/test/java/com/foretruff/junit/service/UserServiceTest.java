@@ -1,11 +1,11 @@
 package com.foretruff.junit.service;
 
 import com.foretruff.junit.TestBase;
+import com.foretruff.junit.dao.UserDaoMock;
 import com.foretruff.junit.dto.User;
 import com.foretruff.junit.extension.ConditionalExtension;
 import com.foretruff.junit.extension.GlobalExtension;
 import com.foretruff.junit.extension.PostProcessingExtension;
-import com.foretruff.junit.extension.ThrowableExtension;
 import com.foretruff.junit.extension.UserServiceParamResolver;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -28,6 +28,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.Mockito;
 
 import java.time.Duration;
 import java.util.Map;
@@ -51,13 +52,15 @@ import static org.junit.jupiter.api.RepeatedTest.LONG_DISPLAY_NAME;
         GlobalExtension.class,
         PostProcessingExtension.class,
         ConditionalExtension.class,
-        ThrowableExtension.class
+//        ThrowableExtension.class
 })
 class UserServiceTest extends TestBase {
     // ctrl + alt + v || ctrl + alt + c
     private static final User IVAN = User.of(1, "Ivan", "777");
     private static final User VASYA = User.of(2, "Vasya", "123");
     private UserService userService;
+
+    private UserDaoMock userDao;
 
     UserServiceTest(TestInfo testInfo) {
         System.out.println();
@@ -69,9 +72,25 @@ class UserServiceTest extends TestBase {
     }
 
     @BeforeEach
-    void prepare(UserService userService) {
+    void prepare() {
         System.out.println("Before each: " + this.toString());
-        this.userService = userService;
+        this.userDao = Mockito.mock(UserDaoMock.class);
+        this.userService = new UserService(userDao);
+    }
+
+    @Test
+    void shouldDeleteExistedUser() {
+        userService.add(IVAN);
+//        Mockito.doReturn(true).when(userDao).delete(IVAN.getId());
+//        Mockito.doReturn(true).when(userDao).delete(Mockito.anyInt());
+
+        Mockito.when(userDao.delete(Mockito.anyInt())).thenReturn(true).thenReturn(false);
+
+        var deleteResult = userService.delete(IVAN.getId());
+        System.out.println(userService.delete(IVAN.getId()));
+        System.out.println(userService.delete(IVAN.getId()));
+
+        assertThat(deleteResult).isTrue();
     }
 
     @Test
@@ -126,7 +145,7 @@ class UserServiceTest extends TestBase {
     @Nested
     @Tag("login")
     @DisplayName("Test user login functionality")
-    @Timeout(value = 100 , unit = TimeUnit.MILLISECONDS)
+    @Timeout(value = 100, unit = TimeUnit.MILLISECONDS)
     class LoginTest {
         @Test
         @Tag("login")
